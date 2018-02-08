@@ -2,7 +2,8 @@ import { UserModel } from '@/models'
 import CommonService from './common.service'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
-// import config from '@/config'
+import config from '@/config/environment'
+import Redis from '@/db/redis'
 // import uuid from 'node-uuid'
 
 var TOKEN_EXPIRATION = 60
@@ -16,9 +17,10 @@ function signToken (user, rembemberMe) {
   if (rembemberMe) {
     expireTime = TOKEN_EXPIRATION_MAX * 60
   }
-  let token = jwt.sign({ user }, 'config.secrets.session', {
+  let token = jwt.sign({ user }, config.secrets.session, {
     expiresIn: expireTime
   })
+  Redis.set(user.email.toLowerCase(), token, expireTime)
   return token
 }
 
@@ -55,7 +57,7 @@ export default class UserService extends CommonService {
     super(userModel)
   }
 
-  save (userForm) {
+  signUpEmail (userForm) {
     userForm.salt = getSalt()
     userForm.hashedPassword = encryptPassword(userForm.password, userForm.salt)
     return userModel.save(userForm).then(user => {
@@ -64,30 +66,50 @@ export default class UserService extends CommonService {
     })
   }
 
+  emailLogin (email, password, rembemberMe = false) {
+    return new Promise((resolve, reject) => {
+      userModel.findOne({ email: email.toLowerCase() }).then(user => {
+        if (!user) resolve({ error: { message: 'This email is not registeredt' } })
+        const encPass = encryptPassword(password, user.salt)
+        if (encPass !== user.hashedPassword) resolve({ error: { message: 'This password is not correct.' } })
+        const token = signToken(user, rembemberMe)
+        resolve({ user, token })
+      }).catch(reason => {
+        reject(reason)
+      })
+    })
+  }
+
   signInFb (fbUser, rembemberMe) {
     return new Promise((resolve, reject) => {
-      userModel
-        .findOne({ email: fbUser.email })
-        .then(user => {
-          if (!user || !user._id) {
-            generateFbUser(fbUser).then(newUser => {
+      try {
+        userModel
+          .findOne({ email: fbUser.email })
+          .then(user => {
+            if (!user || !user._id) {
+              generateFbUser(fbUser)
+                .then(newUser => {
+                  resolve({
+                    token: signToken(newUser, rembemberMe),
+                    user: newUser
+                  })
+                })
+                .catch(reason => {
+                  reject(reason)
+                })
+            } else {
               resolve({
-                token: signToken(newUser, rembemberMe),
-                user: newUser
+                token: signToken(user, rembemberMe),
+                user: user
               })
-            }).catch(reason => {
-              reject(reason)
-            })
-          } else {
-            resolve({
-              token: signToken(user, rembemberMe),
-              user: user
-            })
-          }
-        })
-        .catch(reason => {
-          reject(reason)
-        })
+            }
+          })
+          .catch(reason => {
+            reject(reason)
+          })
+      } catch (error) {
+        reject(error)
+      }
     })
   }
 }

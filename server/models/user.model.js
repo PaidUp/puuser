@@ -41,12 +41,12 @@ const schema = {
   createdBy: String,
   createAt: { type: Date, default: new Date() },
   updateAt: { type: Date, default: new Date() },
-  email: { type: String, lowercase: true, required: true },
+  email: { type: String, lowercase: true },
   verify: { type: verify },
   resetPassword: { type: resetPassword },
   roles: { type: Array, default: ['user'] },
-  hashedPassword: {type: String},
-  salt: {type: String},
+  hashedPassword: { type: String },
+  salt: { type: String },
   facebook: { id: String, email: String },
   contacts: { type: [contact], default: [] },
   addresses: { type: [address], default: [] },
@@ -60,5 +60,14 @@ const schema = {
 export default class OrganizationModel extends CommonModel {
   constructor () {
     super('user', 'users', schema)
+
+    this.schema.path('email').validate(async function (value, respond) {
+      try {
+        let user = await this.constructor.findOne({ email: value })
+        return user === null
+      } catch (error) {
+        return false
+      }
+    }, 'The specified email address is already in use.')
   }
 }

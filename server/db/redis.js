@@ -1,9 +1,10 @@
 import redis from 'redis'
+import Logger from '@/util/logger'
 
 const client = redis.createClient(6379, '127.0.0.1')
 
 client.on('connect', function () {
-  console.log('connected')
+  Logger.info('connected to redis')
 })
 
 export default class Redis {

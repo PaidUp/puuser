@@ -3,9 +3,9 @@ import { HandlerResponse } from '@/util'
 const userService = new UserService()
 
 export default class OrganizationCotroller {
-  static save (req, res) {
+  static signUpEmail (req, res) {
     let hr = new HandlerResponse(res)
-    userService.save(req.body)
+    userService.signUpEmail(req.body)
       .then(user => {
         return hr.send(user)
       }).catch(reason => {
@@ -14,8 +14,8 @@ export default class OrganizationCotroller {
   }
   static getById (req, res) {
     let hr = new HandlerResponse(res)
-    userService.getById(req.params.organizationId).then(organization => {
-      return hr.send(organization)
+    userService.getById(req.params.organizationId).then(user => {
+      return hr.send(user)
     }).catch(reason => {
       return hr.error(reason)
     })
@@ -25,8 +25,18 @@ export default class OrganizationCotroller {
     let hr = new HandlerResponse(res)
     let rememberMe = req.body.rememberMe
     let authResponse = req.body.authResponse
-    FacebookService.fbLogin(authResponse, rememberMe).then(organization => {
-      return hr.send(organization)
+    FacebookService.fbLogin(authResponse, rememberMe).then(data => {
+      return hr.send(data)
+    }).catch(reason => {
+      return hr.error(reason)
+    })
+  }
+
+  static emailLogin (req, res) {
+    let hr = new HandlerResponse(res)
+    let { email, password, rememberMe } = req.body
+    userService.emailLogin(email, password, rememberMe).then(data => {
+      return hr.send(data)
     }).catch(reason => {
       return hr.error(reason)
     })

@@ -4,14 +4,11 @@ import cors from 'cors'
 var whitelist = ['http://localhost:8080']
 var corsOptions = {
   origin: function (origin, callback) {
-    if (origin) {
-      if (whitelist.indexOf(origin) !== -1) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    } else {
+    if (!origin) return callback(null, true)
+    if (whitelist.indexOf(origin) !== -1) {
       callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
     }
   }
 }
