@@ -9,7 +9,7 @@ module.exports = {
   // MongoDB connection options
   mongo: {
     uri: 'mongodb://' + mongoHost + '/testing',
-    prefix: 'pu_product_',
+    prefix: 'pu_user_',
     options: {
       user: 'pudevelop',
       pass: 'xEbiMFBtX48ObFgC',

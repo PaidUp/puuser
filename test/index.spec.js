@@ -34,5 +34,5 @@ describe('loading express', function () {
     })
   })
 
-  importTest('organization: /api/v1/user ', './user');
+  importTest('user: /api/v1/user ', './user');
 })

@@ -23,7 +23,7 @@ export default class OrganizationCotroller {
 
   static fbLogin (req, res) {
     let hr = new HandlerResponse(res)
-    let rememberMe = req.body.rememberMe
+    let rememberMe = req.body.rememberMe || false
     let authResponse = req.body.authResponse
     FacebookService.fbLogin(authResponse, rememberMe).then(data => {
       return hr.send(data)

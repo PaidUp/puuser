@@ -5,6 +5,9 @@ import config from './config/environment'
 import configExpress from './config/express'
 import routes from './routes'
 import Logger from './util/logger'
+import { setCredential } from '@/util/auth'
+
+setCredential(config.secrets.session)
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development'
 

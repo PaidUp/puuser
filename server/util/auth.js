@@ -1,4 +1,4 @@
-import config from '@/config/environment'
+// import config from '@/config/environment'
 import Redis from '@/db/redis'
 import jwt from 'jsonwebtoken'
 
@@ -22,22 +22,25 @@ function serverTokenAuthenticated (req) {
   return token
 }
 
+let secret
+
+export function setCredential (credential) {
+  secret = credential
+}
+
 export default function (req, res, next) {
+  if (!secret) {
+    throw new Error('first must set cretendials, use fn setCredential')
+  }
   let token = serverTokenAuthenticated(req)
-  console.log(token)
   if (!token) {
     return res.sendStatus(401)
   }
-  console.log('into auth: ', token)
-  jwt.verify(token, config.secrets.session, (err, decoded) => {
+  jwt.verify(token, secret, (err, decoded) => {
     if (err) {
-      console.log(err)
       return res.status(500).end()
     }
-    console.log(decoded)
-    console.log(typeof decoded)
     Redis.get(decoded.user.email).then(value => {
-      console.log('value: ', value)
       if (token !== value) return res.sendStatus(401)
       next()
     }).catch(reason => {
