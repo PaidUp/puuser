@@ -1,6 +1,6 @@
 {
   "name": "pu-user",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "microservices PUUser",
   "main": "server/app.js",
   "engines": {
