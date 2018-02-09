@@ -43,9 +43,9 @@ jobs:
           nohup src/redis-server &
       
       - run:
-          name: echo
-          command: echo nohup.out
-          
+          name: cat nohup output
+          command: cat nohup.out
+
       - save_cache:
           paths:
             - node_modules
