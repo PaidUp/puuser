@@ -32,8 +32,8 @@ let all = {
     }
   },
   redis: {
-    host: 'localhost',
-    port: 6379
+    host: 'redis-13835.c16.us-east-1-3.ec2.cloud.redislabs.com',
+    port: 13835
   },
   // Secret for session, you will want to change this and make it an environment variable
   secrets: {

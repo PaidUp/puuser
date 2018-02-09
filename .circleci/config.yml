@@ -30,17 +30,6 @@ jobs:
       - run:
           name: copy config file
           command: cp server/config/environment/index.base.js server/config/environment/index.js
-      - run: |
-          sudo apt-get update &&
-          sudo apt full-upgrade &&
-          sudo apt install build-essential tcl &&
-          curl -O http://download.redis.io/redis-stable.tar.gz &&
-          tar xzvf redis-stable.tar.gz &&
-          cd redis-stable &&
-          make &&
-          make test &&
-          sudo make install &&
-          nohup src/redis-server &
       
       - run:
           name: cat nohup output
