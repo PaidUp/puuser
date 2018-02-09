@@ -1,13 +1,38 @@
-- hosts: dev
+- hosts: '{{env}}'
+  vars_prompt:
+    - name: "env"
+      prompt: "env to deploy"
+
   vars:
-    workspace: /home/ubuntu/PUOrganization
+    workspace: /home/ubuntu/PUUser
+    config: /home/ubuntu/PUUserConfig
+    acceptable_env: ['development', 'stage', 'production']
+
   tasks:
+  - fail: msg="unsupported environment"
+    when: env not in acceptable_env
+
   - name: Pull sources from the repository.
     git: 
-      repo: git@github.com:PaidUp/PUOrganization.git
+      repo: git@github.com:PaidUp/PUUser.git
       dest: '{{ workspace }}'
       version: develop
+      accept_hostkey: yes
       force: yes
+
+  - name: Pull sources from the repository.
+    git: 
+      repo: git@github.com:PaidUp/PUUserConfig.git
+      dest: '{{ config }}'
+      version: master
+      accept_hostkey: yes
+      force: yes
+
+  - name: copy config
+    copy:
+      src: '{{config}}/{{env}}.js'
+      dest: '{{workspace}}/server/config/env/{{env}}.js'
+      remote_src: yes
 
   - name: install node modules
     shell: npm install
@@ -24,4 +49,10 @@
     shell: "webpack && pm2 start deploy/ecosystem-{{env}}.json"
     args:
       chdir: '{{ workspace }}'
+
+  - name: Clean artifact path
+    file:
+      state: absent
+      path: "{{ config }}"
+      recurse: yes
  
