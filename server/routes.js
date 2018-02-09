@@ -1,7 +1,8 @@
 import api from './api'
 import cors from 'cors'
+import config from '@/config/environment'
 
-var whitelist = ['http://localhost:8080']
+var whitelist = config.cors.whitelist
 var corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true)

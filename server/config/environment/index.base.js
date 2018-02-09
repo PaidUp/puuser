@@ -44,7 +44,10 @@ let all = {
     logName: 'pu-product-dev-log',
     metadata: {resource: {type: 'global'}}
   },
-  encryptKey: 'PZ3oXv2v6Pq5HAPFI9NFbQ=='
+  encryptKey: 'PZ3oXv2v6Pq5HAPFI9NFbQ==',
+  cors: {
+    whitelist: ['http://localhost:8080']
+  }
 }
 
 if (process.env.NODE_ENV) {

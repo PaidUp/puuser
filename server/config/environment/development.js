@@ -15,11 +15,14 @@ module.exports = {
       autoIndex: false, // Don't build indexes
       reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
       reconnectInterval: 1000, // Reconnect every 500ms
-      poolSize: 5 // Maintain up to 10 socket connections
+      poolSize: 5 // Maintain up to 5 socket connections
     }
   },
   redis: {
-    host: 'localhost',
+    host: 'develop-001.rd7ge9.0001.use1.cache.amazonaws.com',
     port: 6379
+  },
+  cors: {
+    whitelist: ['https://dev-pp.getpaidup.com']
   }
 }
