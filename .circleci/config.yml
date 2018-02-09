@@ -30,10 +30,6 @@ jobs:
       - run:
           name: copy config file
           command: cp server/config/environment/index.base.js server/config/environment/index.js
-      
-      - run:
-          name: cat nohup output
-          command: cat nohup.out
 
       - save_cache:
           paths:
