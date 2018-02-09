@@ -40,7 +40,7 @@ jobs:
           make &&
           make test &&
           sudo make install &&
-          nohup src/redis-server
+          nohup src/redis-server &
 
       - save_cache:
           paths:
