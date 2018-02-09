@@ -18,5 +18,9 @@ module.exports = {
       reconnectInterval: 1000, // Reconnect every 500ms
       poolSize: 5 // Maintain up to 10 socket connections
     }
+  },
+  redis: {
+    host: 'localhost',
+    port: 6379
   }
 }

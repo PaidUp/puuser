@@ -16,7 +16,7 @@
     "start": "node dist/build.js",
     "test": "mocha --timeout 10000 --compilers js:babel-core/register ./test/**/*.spec.js",
     "jenkins": "npm test",
-    "dev": "cross-env NODE_ENV=development webpack --watch",
+    "dev": "webpack --watch",
     "compile": "babel --source-maps -d compile/ server/"
   },
   "keywords": [

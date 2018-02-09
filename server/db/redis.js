@@ -1,7 +1,8 @@
 import redis from 'redis'
 import Logger from '@/util/logger'
+import config from '@/config/environment'
 
-const client = redis.createClient(6379, '127.0.0.1')
+const client = redis.createClient(config.redis.port, config.redis.host)
 
 client.on('connect', function () {
   Logger.info('connected to redis')
