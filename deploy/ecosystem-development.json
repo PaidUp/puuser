@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "organization",
+      "name": "user",
       "script": "dist/build.js",
       "watch": false,
       "env": {
