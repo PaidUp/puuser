@@ -33,7 +33,7 @@ var server = app.listen(config.port, config.ip, function () {
     }
     Logger.info('Connected to database')
   })
-  Logger.info(`pu-product listening on ${config.port}, in ${app.get('env')} mode`)
+  Logger.info(`pu-user listening on ${config.port}, in ${app.get('env')} mode`)
 })
 
 process.on('exit', (cb) => {

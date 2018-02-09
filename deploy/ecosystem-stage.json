@@ -1,12 +1,12 @@
 {
   "apps": [
     {
-      "name": "organization-stg",
+      "name": "user",
       "script": "dist/build.js",
       "watch": false,
       "env": {
         "NODE_ENV": "stage",
-        "GOOGLE_APPLICATION_CREDENTIALS": "/var/lib/jenkins/gcredentials/pu-product.json"
+        "GOOGLE_APPLICATION_CREDENTIALS": "/home/ubuntu/gcredentials/service_account.json"
       }
     }
   ]

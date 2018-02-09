@@ -31,13 +31,19 @@
       dest: '{{workspace}}/server/config/environment/{{env}}.js'
       remote_src: yes
 
+  - name: copy config base
+    copy:
+      src: '{{workspace}}/server/config/environment/index.base.js'
+      dest: '{{workspace}}/server/config/environment/index.js'
+      remote_src: yes
+
   - name: install node modules
     shell: npm install
     args:
       chdir: '{{ workspace }}'
 
   - name: NODE | Stop APP
-    shell: pm2 stop organization
+    shell: pm2 stop user
     args:
       chdir: '{{ workspace }}'
     ignore_errors: yes
@@ -51,5 +57,4 @@
     file:
       state: absent
       path: "{{ config }}"
-      recurse: yes
  
