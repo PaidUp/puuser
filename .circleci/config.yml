@@ -41,7 +41,11 @@ jobs:
           make test &&
           sudo make install &&
           nohup src/redis-server &
-
+      
+      - run:
+          name: echo
+          command: echo nohup.out
+          
       - save_cache:
           paths:
             - node_modules
