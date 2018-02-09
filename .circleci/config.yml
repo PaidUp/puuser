@@ -53,7 +53,7 @@ jobs:
       - checkout
       - run:
           name: Deploy if tests pass and branch is develop
-          command: ansible-playbook deploy/develop.yml -i ./deploy/inventory --extra-vars "env=dev"
+          command: ansible-playbook deploy/main.yml -i ./deploy/inventory --extra-vars "env=development"
 
   deploy-stage:
     docker:
