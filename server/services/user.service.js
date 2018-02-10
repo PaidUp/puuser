@@ -112,4 +112,8 @@ export default class UserService extends CommonService {
       }
     })
   }
+
+  logout (email) {
+    return Redis.del()
+  }
 }

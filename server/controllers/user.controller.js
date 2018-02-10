@@ -41,4 +41,14 @@ export default class OrganizationCotroller {
       return hr.error(reason)
     })
   }
+
+  static logout (req, res) {
+    let hr = new HandlerResponse(res)
+    let email = req.body.email
+    userService.logout(email).then(data => {
+      return hr.send(data)
+    }).catch(reason => {
+      return hr.error(reason)
+    })
+  }
 }

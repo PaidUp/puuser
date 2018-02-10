@@ -28,7 +28,7 @@ export function setCredential (credential) {
   secret = credential
 }
 
-export default function (req, res, next) {
+export function revoke (req, res, next) {
   if (!secret) {
     throw new Error('first must set cretendials, use fn setCredential')
   }
@@ -36,9 +36,29 @@ export default function (req, res, next) {
   if (!token) {
     return res.sendStatus(401)
   }
-  jwt.verify(token, secret, (err, decoded) => {
-    if (err) {
-      return res.status(500).end()
+  jwt.verify(token, secret, (error, decoded) => {
+    if (error) {
+      return res.status(500).json({error, message: 'invalid token'})
+    }
+    Redis.del(decoded.user.email).then(value => {
+      next()
+    }).catch(reason => {
+      res.sendStatus(500).json(reason)
+    })
+  })
+}
+
+export function validate (req, res, next) {
+  if (!secret) {
+    throw new Error('first must set cretendials, use fn setCredential')
+  }
+  let token = serverTokenAuthenticated(req)
+  if (!token) {
+    return res.sendStatus(401)
+  }
+  jwt.verify(token, secret, (error, decoded) => {
+    if (error) {
+      return res.status(500).json({error, message: 'invalid token'})
     }
     Redis.get(decoded.user.email).then(value => {
       if (token !== value) return res.sendStatus(401)
