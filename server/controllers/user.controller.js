@@ -12,9 +12,9 @@ export default class OrganizationCotroller {
         return hr.error(reason)
       })
   }
-  static getById (req, res) {
+  static current (req, res) {
     let hr = new HandlerResponse(res)
-    userService.getById(req.params.organizationId).then(user => {
+    userService.getById(req.user._id).then(user => {
       return hr.send(user)
     }).catch(reason => {
       return hr.error(reason)

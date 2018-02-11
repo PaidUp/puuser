@@ -7,7 +7,7 @@ const router = express.Router()
 router.post('/', UserController.signUpEmail)
 router.post('/login/fb', UserController.fbLogin)
 router.post('/login/email', UserController.emailLogin)
-router.get('/', UserController.getById)
+router.get('/', validate, UserController.current)
 router.delete('/logout', revoke, (req, res) => res.status(200).end())
 router.get('/test', validate, (req, res) => {
   res.status(200).end()

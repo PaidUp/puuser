@@ -62,6 +62,7 @@ export function validate (req, res, next) {
     }
     Redis.get(decoded.user.email).then(value => {
       if (token !== value) return res.sendStatus(401)
+      req.user = decoded.user
       next()
     }).catch(reason => {
       res.sendStatus(500).json(reason)
