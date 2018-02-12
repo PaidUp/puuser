@@ -41,4 +41,11 @@ process.on('exit', (cb) => {
   console.log('bye......')
 })
 
+process.on('unhandledRejection', (err) => {
+  throw err
+})
+process.on('uncaughtException', (err) => {
+  Logger.critical(err)
+})
+
 export default server

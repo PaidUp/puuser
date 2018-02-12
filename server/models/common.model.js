@@ -3,9 +3,7 @@ import config from '@/config/environment'
 
 export default class CommonModel {
   constructor (name, document, schemaObj) {
-    schemaObj['createAt'] = { type: Date, default: Date.now }
-    schemaObj['updateAt'] = { type: Date, default: Date.now }
-    this.schema = new mongoose.Schema(schemaObj)
+    this.schema = schemaObj
     this.Model = mongoose.model(
       name,
       this.schema,
@@ -49,14 +47,14 @@ export default class CommonModel {
 
   findOne (filter) {
     return new Promise((resolve, reject) => {
-      try {
-        this.Model.findOne(filter, (err, data) => {
+      this.Model.findOne(filter, (err, data) => {
+        try {
           if (err) return reject(err)
           resolve(data)
-        })
-      } catch (error) {
-        reject(error)
-      }
+        } catch (error) {
+          reject(error)
+        }
+      })
     })
   }
 

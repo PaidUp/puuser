@@ -1,4 +1,4 @@
-import { UserModel } from '@/models'
+import { PersonModel } from '@/models'
 import CommonService from './common.service'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
@@ -10,7 +10,7 @@ var TOKEN_EXPIRATION = 60
 var TOKEN_EXPIRATION_MIN = TOKEN_EXPIRATION * 1
 var TOKEN_EXPIRATION_MAX = TOKEN_EXPIRATION * 60 * 24 * 365
 
-const userModel = new UserModel()
+const personModel = new PersonModel()
 
 function signToken (user, rembemberMe) {
   let expireTime = TOKEN_EXPIRATION_MIN * 60
@@ -24,21 +24,16 @@ function signToken (user, rembemberMe) {
   return token
 }
 
-function generateFbUser (fbUser) {
+function generateFbUser (fbUser, type = 'customer') {
   const newFbUser = {
     firstName: fbUser.first_name,
     lastName: fbUser.last_name,
     email: fbUser.email,
-    facebook: {
-      id: fbUser.id,
-      email: fbUser.email
-    },
-    verify: {
-      status: 'verified',
-      updatedAt: Date.now
-    }
+    facebookId: fbUser.id,
+    type
+
   }
-  return userModel.save(newFbUser)
+  return personModel.save(newFbUser)
 }
 
 function getSalt () {
@@ -54,13 +49,13 @@ function encryptPassword (password, salt) {
 
 export default class UserService extends CommonService {
   constructor () {
-    super(userModel)
+    super(personModel)
   }
 
   signUpEmail (userForm) {
     userForm.salt = getSalt()
     userForm.hashedPassword = encryptPassword(userForm.password, userForm.salt)
-    return userModel.save(userForm).then(user => {
+    return personModel.save(userForm).then(user => {
       const token = signToken(user, false)
       return { token, user }
     })
@@ -68,7 +63,7 @@ export default class UserService extends CommonService {
 
   emailLogin (email, password, rembemberMe = false) {
     return new Promise((resolve, reject) => {
-      userModel.findOne({ email: email.toLowerCase() }).then(user => {
+      personModel.findOne({ email: email.toLowerCase() }).then(user => {
         if (!user) resolve({ error: { message: 'This email is not registeredt' } })
         const encPass = encryptPassword(password, user.salt)
         if (encPass !== user.hashedPassword) resolve({ error: { message: 'This password is not correct.' } })
@@ -83,7 +78,7 @@ export default class UserService extends CommonService {
   signInFb (fbUser, rembemberMe) {
     return new Promise((resolve, reject) => {
       try {
-        userModel
+        personModel
           .findOne({ email: fbUser.email })
           .then(user => {
             if (!user || !user._id) {
