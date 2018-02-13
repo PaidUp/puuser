@@ -130,7 +130,7 @@ it('POST# /login/email login with email wrong', done => {
       res.should.have.status(200)
       res.body.should.have.property('error')
       res.body.error.should.have.property('message')
-      res.body.error.message.should.equal('This email is not registered')
+      res.body.error.message.should.equal('This email is not registered.')
       
       done()
     })
