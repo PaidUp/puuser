@@ -67,7 +67,7 @@ export default class UserService extends CommonService {
   emailLogin (email, password, rembemberMe = false) {
     return new Promise((resolve, reject) => {
       personModel.findOne({ email: email.toLowerCase() }).then(user => {
-        if (!user) return resolve({ error: { message: 'This email is not registered' } })
+        if (!user) return resolve({ error: { message: 'This email is not registered.' } })
         if (user.facebookId) return resolve({ error: { message: 'This a facebook account.' } })
         const encPass = encryptPassword(password, user.salt)
         if (encPass !== user.hashedPassword) resolve({ error: { message: 'Invalid password.' } })
