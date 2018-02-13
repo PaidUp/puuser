@@ -2,11 +2,16 @@ import Logging from '@google-cloud/logging'
 import config from '@/config/environment'
 import pmx from 'pmx'
 
-const logging = new Logging({
-  projectId: config.logger.projectId
-})
-const log = logging.log(config.logger.logName)
+let log
 const metadata = config.logger.metadata
+
+if (process.env.NODE_ENV !== 'test') {
+  const logging = new Logging({
+    projectId: config.logger.projectId,
+    keyFilename: 'server/config/credentials/gcp.json'
+  })
+  log = logging.log(config.logger.logName)
+}
 
 function localLog (type, msg) {
   const plainMsg = JSON.stringify(msg)
@@ -22,6 +27,9 @@ function localLog (type, msg) {
 }
 
 function write (type, msg, notify) {
+  if (process.env.NODE_ENV === 'test') {
+    return localLog(type, msg)
+  }
   const entry = log.entry(metadata, msg)
   if (notify) {
     pmx.notify(msg)
@@ -32,7 +40,7 @@ function write (type, msg, notify) {
       console.error(`${type}: `, JSON.stringify(msg))
     }
   })
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'local') {
     localLog(type, msg)
   }
 }

@@ -3,7 +3,6 @@ let chaiHttp = require('chai-http')
 let server = require('../server/app').default
 let should = chai.should()
 let config = require('../server/config/environment').default
-console.log('token', config)
 let token = config.secrets.session
 let results = {
   user: {}
