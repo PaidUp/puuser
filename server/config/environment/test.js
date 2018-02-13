@@ -18,10 +18,6 @@ module.exports = {
       poolSize: 5 // Maintain up to 5 socket connections
     }
   },
-  redis: {
-    host: 'develop-001.rd7ge9.0001.use1.cache.amazonaws.com',
-    port: 6379
-  },
   logger: {
     projectId: 'gothic-talent-192920',
     logName: 'pu-product-test-log',

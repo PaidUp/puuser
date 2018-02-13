@@ -7,8 +7,7 @@ const metadata = config.logger.metadata
 
 if (process.env.NODE_ENV !== 'test') {
   const logging = new Logging({
-    projectId: config.logger.projectId,
-    keyFilename: 'server/config/credentials/gcp.json'
+    projectId: config.logger.projectId
   })
   log = logging.log(config.logger.logName)
 }
@@ -28,7 +27,7 @@ function localLog (type, msg) {
 
 function write (type, msg, notify) {
   if (process.env.NODE_ENV === 'test') {
-    return localLog(type, msg)
+    return
   }
   const entry = log.entry(metadata, msg)
   if (notify) {
