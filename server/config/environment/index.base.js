@@ -2,13 +2,15 @@ import _ from 'lodash'
 import development from './development'
 import production from './production'
 import test from './test'
+import stage from './stage'
 
-const mongoHost = process.env.TDUSER_MONGO_HOST || 'pu-dev-shard-00-00-4nodg.mongodb.net:27017,pu-dev-shard-00-01-4nodg.mongodb.net:27017,pu-dev-shard-00-02-4nodg.mongodb.net:27017'
+const mongoHost = 'pu-dev-shard-00-00-4nodg.mongodb.net:27017,pu-dev-shard-00-01-4nodg.mongodb.net:27017,pu-dev-shard-00-02-4nodg.mongodb.net:27017'
 
 const envs = {
   development,
   production,
-  test
+  test,
+  stage
 }
 
 // All configurations will extend these options
