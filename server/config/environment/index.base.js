@@ -1,9 +1,19 @@
+import _ from 'lodash'
+import development from './development'
+import production from './production'
+import test from './test'
+
 const mongoHost = process.env.TDUSER_MONGO_HOST || 'pu-dev-shard-00-00-4nodg.mongodb.net:27017,pu-dev-shard-00-01-4nodg.mongodb.net:27017,pu-dev-shard-00-02-4nodg.mongodb.net:27017'
+
+const envs = {
+  development,
+  production,
+  test
+}
 
 // All configurations will extend these options
 // ============================================
 let all = {
-  env: process.env.NODE_ENV,
   port: process.env.PORT || 9001,
   mongo: {
     uri: 'mongodb://' + mongoHost + '/develop',
@@ -36,4 +46,12 @@ let all = {
   encryptKey: 'PZ3oXv2v6Pq5HAPFI9NFbQ=='
 }
 
+if (process.env.NODE_ENV) {
+  all = _.merge(
+    all,
+    envs[process.env.NODE_ENV] || {})
+}
+
+// Export the config object based on the NODE_ENV
+// ==============================================
 export default all
