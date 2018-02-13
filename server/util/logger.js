@@ -3,7 +3,7 @@ import config from '@/config/environment'
 import pmx from 'pmx'
 
 let log
-const metadata = config.logger.metadata
+const metadata = { resource: {type: 'global'} }
 
 if (process.env.NODE_ENV !== 'test') {
   const logging = new Logging({

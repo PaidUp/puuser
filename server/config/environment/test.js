@@ -21,5 +21,10 @@ module.exports = {
   redis: {
     host: 'develop-001.rd7ge9.0001.use1.cache.amazonaws.com',
     port: 6379
+  },
+  logger: {
+    projectId: 'gothic-talent-192920',
+    logName: 'pu-product-test-log',
+    metadata: {resource: {type: 'global'}}
   }
 }
