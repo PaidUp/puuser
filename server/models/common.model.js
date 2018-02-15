@@ -3,17 +3,14 @@ import config from '@/config/environment'
 
 export default class CommonModel {
   constructor (name, document, schemaObj) {
-    this.schema = schemaObj
+    schemaObj['createOn'] = { type: Date, default: Date.now }
+    schemaObj['updateOn'] = { type: Date, default: Date.now }
+    this.schema = new mongoose.Schema(schemaObj)
     this.Model = mongoose.model(
       name,
       this.schema,
       config.mongo.prefix + document
     )
-    this.schema.pre('save', function (next) {
-      if (!this.isNew) return next()
-      this.updated = new Date()
-      next()
-    })
   }
 
   save (pp) {

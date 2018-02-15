@@ -1,7 +1,6 @@
 import CommonModel from './common.model'
-import { Schema } from 'mongoose'
 
-const contact = new Schema({
+const contact = {
   label: { type: String, required: true, enum: ['work', 'home'] },
   phone: { type: String, required: true },
   address1: { type: String, required: true },
@@ -10,21 +9,21 @@ const contact = new Schema({
   state: { type: String, required: true },
   country: { type: String, required: true, default: [ 'USA' ] },
   zipCode: { type: String, required: true }
-})
+}
 
-const verify = new Schema({
+const verify = {
   token: { type: String, required: true },
   updatedAt: { type: Date, default: Date.now },
   status: { type: String, required: true }
-})
+}
 
-const resetPassword = new Schema({
+const resetPassword = {
   token: { type: String, required: true },
   updatedAt: { type: Date, default: Date.now },
   status: { type: String, required: true }
-})
+}
 
-const schema = new Schema({
+const schema = {
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   birthDate: { type: Date },
@@ -39,7 +38,7 @@ const schema = new Schema({
   resetPassword: { type: resetPassword },
   verify: { type: verify },
   roles: { type: Array, default: [ 'parent' ], enum: ['parent', 'coach', 'director'] }
-})
+}
 
 export default class OrganizationModel extends CommonModel {
   constructor () {

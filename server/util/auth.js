@@ -36,16 +36,11 @@ export function revoke (req, res, next) {
   if (!token) {
     return res.sendStatus(401)
   }
-  jwt.verify(token, secret, (error, decoded) => {
-    if (error) {
-      return res.status(500).json({error, message: 'invalid token'})
-    }
-    Redis.del(decoded.user.email).then(value => {
-      next()
-    }).catch(reason => {
-      res.sendStatus(500).json(reason)
-    })
-  })
+  const decoded = jwt.decode(token)
+  if (decoded) {
+    Redis.del(decoded.user.email)
+  }
+  next()
 }
 
 export function validate (req, res, next) {
