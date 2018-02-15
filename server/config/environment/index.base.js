@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import development from './development'
+import develop from './develop'
 import production from './production'
 import test from './test'
 import stage from './stage'
@@ -7,7 +7,7 @@ import stage from './stage'
 const mongoHost = 'pu-dev-shard-00-00-4nodg.mongodb.net:27017,pu-dev-shard-00-01-4nodg.mongodb.net:27017,pu-dev-shard-00-02-4nodg.mongodb.net:27017'
 
 const envs = {
-  development,
+  develop,
   production,
   test,
   stage
