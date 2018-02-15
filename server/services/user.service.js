@@ -4,7 +4,6 @@ import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import config from '@/config/environment'
 import Redis from '@/db/redis'
-// import uuid from 'node-uuid'
 
 var TOKEN_EXPIRATION = 60
 var TOKEN_EXPIRATION_MIN = TOKEN_EXPIRATION * 1
