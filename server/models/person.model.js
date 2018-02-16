@@ -33,7 +33,7 @@ const schema = {
   type: { type: String, required: true, enum: [ 'customer', 'functionary', 'organization', 'api', 'service' ] },
   facebookId: { type: String },
   organizationId: { type: String },
-  externalAccountId: { type: String },
+  externalCustomerId: { type: String },
   contacts: { type: [ contact ], default: [] },
   resetPassword: { type: resetPassword },
   verify: { type: verify },
