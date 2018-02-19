@@ -1,27 +1,16 @@
 import { PersonModel } from '@/models'
 import CommonService from './common.service'
 import crypto from 'crypto'
-import jwt from 'jsonwebtoken'
-import config from '@/config/environment'
-import Redis from '@/db/redis'
+import { Auth } from 'pu-common'
+// import jwt from 'jsonwebtoken'
+// import config from '@/config/environment'
+// import Redis from '@/db/redis'
 
-var TOKEN_EXPIRATION = 60
-var TOKEN_EXPIRATION_MIN = TOKEN_EXPIRATION * 1
-var TOKEN_EXPIRATION_MAX = TOKEN_EXPIRATION * 60 * 24 * 365
+// var TOKEN_EXPIRATION = 60
+// var TOKEN_EXPIRATION_MIN = TOKEN_EXPIRATION * 1
+// var TOKEN_EXPIRATION_MAX = TOKEN_EXPIRATION * 60 * 24 * 365
 
 const personModel = new PersonModel()
-
-function signToken (user, rembemberMe) {
-  let expireTime = TOKEN_EXPIRATION_MIN * 60
-  if (rembemberMe) {
-    expireTime = TOKEN_EXPIRATION_MAX * 60
-  }
-  let token = jwt.sign({ user }, config.secrets.session, {
-    expiresIn: expireTime
-  })
-  Redis.set(user.email.toLowerCase(), token, expireTime)
-  return token
-}
 
 function generateFbUser (fbUser, type = 'customer') {
   const newFbUser = {
@@ -58,7 +47,7 @@ export default class UserService extends CommonService {
       user = user.toObject()
       delete user.salt
       delete user.hashedPassword
-      const token = signToken(user, false)
+      const token = Auth.token(user, false)
       return { token, user }
     })
   }
@@ -70,7 +59,7 @@ export default class UserService extends CommonService {
         if (user.facebookId) return resolve({ error: { message: 'This a facebook account.' } })
         const encPass = encryptPassword(password, user.salt)
         if (encPass !== user.hashedPassword) resolve({ error: { message: 'Invalid password.' } })
-        const token = signToken(user, rembemberMe)
+        const token = Auth.token(user, rembemberMe)
         user = user.toObject()
         delete user.salt
         delete user.hashedPassword
@@ -91,7 +80,7 @@ export default class UserService extends CommonService {
               generateFbUser(fbUser)
                 .then(newUser => {
                   resolve({
-                    token: signToken(newUser, rembemberMe),
+                    token: Auth.token(newUser, rembemberMe),
                     user: newUser
                   })
                 })
@@ -100,7 +89,7 @@ export default class UserService extends CommonService {
                 })
             } else {
               resolve({
-                token: signToken(user, rembemberMe),
+                token: Auth.token(user, rembemberMe),
                 user: user
               })
             }
@@ -115,6 +104,6 @@ export default class UserService extends CommonService {
   }
 
   logout (email) {
-    return Redis.del()
+    return Auth.remove()
   }
 }
