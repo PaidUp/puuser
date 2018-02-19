@@ -47,6 +47,9 @@ process.on('unhandledRejection', (err) => {
 })
 process.on('uncaughtException', (err) => {
   Logger.critical(err)
+  if (process.env.NODE_ENV === 'test') {
+    process.exit(1)
+  }
 })
 
 export default server
