@@ -4,10 +4,11 @@ import mongoose from 'mongoose'
 import config from './config/environment'
 import configExpress from './config/express'
 import routes from './routes'
-import Logger from './util/logger'
-import { setCredential } from '@/util/auth'
+import { Ncryp, Auth, Logger } from 'pu-common'
 
-setCredential(config.secrets.session)
+Auth.setCredential(config.auth)
+Ncryp.setKey(config.encryptKey)
+Logger.setConfig(config.logger)
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development'
 
@@ -39,6 +40,16 @@ var server = app.listen(config.port, config.ip, function () {
 process.on('exit', (cb) => {
   mongoose.connection.close()
   console.log('bye......')
+})
+
+process.on('unhandledRejection', (err) => {
+  throw err
+})
+process.on('uncaughtException', (err) => {
+  Logger.critical(err)
+  if (process.env.NODE_ENV === 'test') {
+    process.exit(1)
+  }
 })
 
 export default server

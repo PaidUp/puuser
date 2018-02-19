@@ -1,6 +1,6 @@
 {
   "name": "pu-user",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "microservices PUUser",
   "main": "server/app.js",
   "engines": {
@@ -14,9 +14,9 @@
   },
   "scripts": {
     "start": "node dist/build.js",
-    "test": "mocha --timeout 10000 --compilers js:babel-core/register ./test/**/*.spec.js",
+    "test": "export NODE_ENV=test && mocha --timeout 10000 --compilers js:babel-core/register ./test/**/*.spec.js",
     "jenkins": "npm test",
-    "dev": "webpack --watch",
+    "dev": "export NODE_ENV=local && webpack --watch",
     "compile": "babel --source-maps -d compile/ server/"
   },
   "keywords": [
@@ -26,8 +26,7 @@
   "author": "@paidUp",
   "license": "private",
   "dependencies": {
-    "@google-cloud/logging": "^1.1.2",
-    "blind": "^1.0.0",
+    "pu-common": "git+ssh://git@github.com:PaidUp/PUCommon.git#0.11.2",
     "body-parser": "^1.14.1",
     "camelize": "^1.0.0",
     "composable-middleware": "^0.3.0",
@@ -36,15 +35,12 @@
     "cors": "^2.8.4",
     "express": "^4.13.4",
     "fb": "^2.0.0",
-    "jsonwebtoken": "^8.1.1",
     "lodash": "^4.11.1",
     "method-override": "^2.3.5",
     "moment": "^2.20.1",
     "mongoose": "^5.0.1",
-    "passport-facebook": "^2.1.1",
-    "passport-local": "^1.0.0",
-    "pmx": "^0.6.1",
-    "redis": "^2.8.0"
+    "node-uuid": "^1.4.8",
+    "pmx": "^0.6.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

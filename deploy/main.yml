@@ -3,7 +3,7 @@
   vars:
     workspace: /home/ubuntu/PUUser
     config: /home/ubuntu/PUUserConfig
-    acceptable_env: ['development', 'stage', 'production']
+    acceptable_env: ['develop', 'stage', 'production']
 
   tasks:
   - fail: msg="unsupported environment"
@@ -13,7 +13,7 @@
     git: 
       repo: git@github.com:PaidUp/PUUser.git
       dest: '{{ workspace }}'
-      version: develop
+      version: '{{ env }}'
       accept_hostkey: yes
       force: yes
 

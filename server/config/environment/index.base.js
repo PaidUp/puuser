@@ -1,20 +1,21 @@
 import _ from 'lodash'
-import development from './development'
+import develop from './develop'
 import production from './production'
 import test from './test'
+import stage from './stage'
 
-const mongoHost = process.env.TDUSER_MONGO_HOST || 'pu-dev-shard-00-00-4nodg.mongodb.net:27017,pu-dev-shard-00-01-4nodg.mongodb.net:27017,pu-dev-shard-00-02-4nodg.mongodb.net:27017'
+const mongoHost = 'pu-dev-shard-00-00-4nodg.mongodb.net:27017,pu-dev-shard-00-01-4nodg.mongodb.net:27017,pu-dev-shard-00-02-4nodg.mongodb.net:27017'
 
 const envs = {
-  development,
+  develop,
   production,
-  test
+  test,
+  stage
 }
 
 // All configurations will extend these options
 // ============================================
 let all = {
-  env: process.env.NODE_ENV,
   port: process.env.PORT || 9001,
   mongo: {
     uri: 'mongodb://' + mongoHost + '/develop',
@@ -31,13 +32,10 @@ let all = {
       poolSize: 5 // Maintain up to 10 socket connections
     }
   },
-  redis: {
+  auth: {
+    credential: 'puproduct-secret',
     host: 'redis-13835.c16.us-east-1-3.ec2.cloud.redislabs.com',
     port: 13835
-  },
-  // Secret for session, you will want to change this and make it an environment variable
-  secrets: {
-    session: 'puproduct-secret'
   },
   logger: {
     projectId: 'gothic-talent-192920',

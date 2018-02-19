@@ -2,12 +2,21 @@ let chai = require('chai')
 let chaiHttp = require('chai-http')
 let server = require('../server/app').default
 let should = chai.should()
-let token = require('../server/config/environment').default.nodePass.me.token
-let results = {
-  user: {}
+var uuid = require('node-uuid')
+
+let request = {
+  user: {
+    userForm: {
+      firstName: 'John',
+      lastName: 'Doe',
+      email: `${uuid.v4()}@test.com`,
+      password: 'testtest',
+      type: 'customer'
+    }
+  }
 }
 
-results.user.payload = {}
+let results = {}
 
 
 chai.use(chaiHttp)
@@ -15,5 +24,5 @@ chai.use(chaiHttp)
 exports.chai = chai
 exports.server = server
 exports.should = should
-exports.token = token
 exports.results = results
+exports.request = request

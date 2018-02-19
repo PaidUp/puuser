@@ -1,44 +1,27 @@
-import { UserModel } from '@/models'
+import { PersonModel } from '@/models'
 import CommonService from './common.service'
 import crypto from 'crypto'
-import jwt from 'jsonwebtoken'
-import config from '@/config/environment'
-import Redis from '@/db/redis'
-// import uuid from 'node-uuid'
+import { Auth } from 'pu-common'
+// import jwt from 'jsonwebtoken'
+// import config from '@/config/environment'
+// import Redis from '@/db/redis'
 
-var TOKEN_EXPIRATION = 60
-var TOKEN_EXPIRATION_MIN = TOKEN_EXPIRATION * 1
-var TOKEN_EXPIRATION_MAX = TOKEN_EXPIRATION * 60 * 24 * 365
+// var TOKEN_EXPIRATION = 60
+// var TOKEN_EXPIRATION_MIN = TOKEN_EXPIRATION * 1
+// var TOKEN_EXPIRATION_MAX = TOKEN_EXPIRATION * 60 * 24 * 365
 
-const userModel = new UserModel()
+const personModel = new PersonModel()
 
-function signToken (user, rembemberMe) {
-  let expireTime = TOKEN_EXPIRATION_MIN * 60
-  if (rembemberMe) {
-    expireTime = TOKEN_EXPIRATION_MAX * 60
-  }
-  let token = jwt.sign({ user }, config.secrets.session, {
-    expiresIn: expireTime
-  })
-  Redis.set(user.email.toLowerCase(), token, expireTime)
-  return token
-}
-
-function generateFbUser (fbUser) {
+function generateFbUser (fbUser, type = 'customer') {
   const newFbUser = {
     firstName: fbUser.first_name,
     lastName: fbUser.last_name,
     email: fbUser.email,
-    facebook: {
-      id: fbUser.id,
-      email: fbUser.email
-    },
-    verify: {
-      status: 'verified',
-      updatedAt: Date.now
-    }
+    facebookId: fbUser.id,
+    type
+
   }
-  return userModel.save(newFbUser)
+  return personModel.save(newFbUser)
 }
 
 function getSalt () {
@@ -54,25 +37,32 @@ function encryptPassword (password, salt) {
 
 export default class UserService extends CommonService {
   constructor () {
-    super(userModel)
+    super(personModel)
   }
 
   signUpEmail (userForm) {
     userForm.salt = getSalt()
     userForm.hashedPassword = encryptPassword(userForm.password, userForm.salt)
-    return userModel.save(userForm).then(user => {
-      const token = signToken(user, false)
+    return personModel.save(userForm).then(user => {
+      user = user.toObject()
+      delete user.salt
+      delete user.hashedPassword
+      const token = Auth.token(user, false)
       return { token, user }
     })
   }
 
   emailLogin (email, password, rembemberMe = false) {
     return new Promise((resolve, reject) => {
-      userModel.findOne({ email: email.toLowerCase() }).then(user => {
-        if (!user) resolve({ error: { message: 'This email is not registeredt' } })
+      personModel.findOne({ email: email.toLowerCase() }).then(user => {
+        if (!user) return resolve({ error: { message: 'This email is not registered.' } })
+        if (user.facebookId) return resolve({ error: { message: 'This a facebook account.' } })
         const encPass = encryptPassword(password, user.salt)
-        if (encPass !== user.hashedPassword) resolve({ error: { message: 'This password is not correct.' } })
-        const token = signToken(user, rembemberMe)
+        if (encPass !== user.hashedPassword) resolve({ error: { message: 'Invalid password.' } })
+        const token = Auth.token(user, rembemberMe)
+        user = user.toObject()
+        delete user.salt
+        delete user.hashedPassword
         resolve({ user, token })
       }).catch(reason => {
         reject(reason)
@@ -83,14 +73,14 @@ export default class UserService extends CommonService {
   signInFb (fbUser, rembemberMe) {
     return new Promise((resolve, reject) => {
       try {
-        userModel
+        personModel
           .findOne({ email: fbUser.email })
           .then(user => {
             if (!user || !user._id) {
               generateFbUser(fbUser)
                 .then(newUser => {
                   resolve({
-                    token: signToken(newUser, rembemberMe),
+                    token: Auth.token(newUser, rembemberMe),
                     user: newUser
                   })
                 })
@@ -99,7 +89,7 @@ export default class UserService extends CommonService {
                 })
             } else {
               resolve({
-                token: signToken(user, rembemberMe),
+                token: Auth.token(user, rembemberMe),
                 user: user
               })
             }
@@ -111,5 +101,9 @@ export default class UserService extends CommonService {
         reject(error)
       }
     })
+  }
+
+  logout (email) {
+    return Auth.remove()
   }
 }
