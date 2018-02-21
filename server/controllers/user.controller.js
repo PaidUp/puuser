@@ -1,6 +1,5 @@
-import { UserService, FacebookService } from '@/services'
+import { userService, facebookService } from '@/services'
 import { HandlerResponse } from 'pu-common'
-const userService = UserService.getInstance()
 
 export default class OrganizationCotroller {
   static signUpEmail (req, res) {
@@ -22,7 +21,7 @@ export default class OrganizationCotroller {
   static fbLogin (req, res) {
     let rememberMe = req.body.rememberMe || false
     let authResponse = req.body.authResponse
-    FacebookService.getInstance().fbLogin(authResponse, rememberMe).then(data => {
+    facebookService.fbLogin(authResponse, rememberMe).then(data => {
       return HandlerResponse.send(res, data)
     }).catch(reason => {
       return HandlerResponse.error(res, reason)

@@ -30,12 +30,12 @@ function encryptPassword (password, salt) {
 
 let userService
 
-export default class UserService extends CommonService {
+class UserService extends CommonService {
   constructor () {
     super(personModel)
   }
 
-  static getInstance () {
+  static get instance () {
     if (!userService) {
       userService = new UserService()
     }
@@ -109,3 +109,5 @@ export default class UserService extends CommonService {
     return Auth.remove()
   }
 }
+
+export default UserService.instance

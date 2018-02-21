@@ -1,11 +1,10 @@
 import FB from 'fb'
-import UserService from './user.service'
+import userService from './user.service'
 
-const userService = UserService.getInstance()
 let facebookService
 
-export default class FacebookService {
-  static getInstance () {
+class FacebookService {
+  static get instance () {
     if (!facebookService) {
       facebookService = new FacebookService()
     }
@@ -38,3 +37,5 @@ export default class FacebookService {
     })
   }
 }
+
+export default FacebookService.instance
