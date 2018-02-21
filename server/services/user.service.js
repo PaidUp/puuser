@@ -2,13 +2,6 @@ import { PersonModel } from '@/models'
 import CommonService from './common.service'
 import crypto from 'crypto'
 import { Auth } from 'pu-common'
-// import jwt from 'jsonwebtoken'
-// import config from '@/config/environment'
-// import Redis from '@/db/redis'
-
-// var TOKEN_EXPIRATION = 60
-// var TOKEN_EXPIRATION_MIN = TOKEN_EXPIRATION * 1
-// var TOKEN_EXPIRATION_MAX = TOKEN_EXPIRATION * 60 * 24 * 365
 
 const personModel = new PersonModel()
 
@@ -35,9 +28,18 @@ function encryptPassword (password, salt) {
     .toString('base64')
 }
 
+let userService
+
 export default class UserService extends CommonService {
   constructor () {
     super(personModel)
+  }
+
+  static getInstance () {
+    if (!userService) {
+      userService = new UserService()
+    }
+    return userService
   }
 
   signUpEmail (userForm) {

@@ -1,10 +1,18 @@
 import FB from 'fb'
 import UserService from './user.service'
 
-const userService = new UserService()
+const userService = UserService.getInstance()
+let facebookService
 
 export default class FacebookService {
-  static fbLogin (facebookResponse, rememberMe) {
+  static getInstance () {
+    if (!facebookService) {
+      facebookService = new FacebookService()
+    }
+    return facebookService
+  }
+
+  fbLogin (facebookResponse, rememberMe) {
     return new Promise((resolve, reject) => {
       FB.setAccessToken(facebookResponse.accessToken)
       FB.api('/me', { fields: ['email', 'first_name', 'gender', 'last_name', 'link', 'locale', 'middle_name', 'name', 'timezone', 'updated_time', 'verified'] },
