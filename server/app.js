@@ -4,9 +4,9 @@ import mongoose from 'mongoose'
 import config from './config/environment'
 import configExpress from './config/express'
 import routes from './routes'
-import { Ncryp, Auth, Logger } from 'pu-common'
+import { Ncryp, auth, Logger } from 'pu-common'
 
-Auth.setCredential(config.auth)
+auth.config = config.auth
 Ncryp.setKey(config.encryptKey)
 Logger.setConfig(config.logger)
 

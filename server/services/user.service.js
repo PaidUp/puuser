@@ -1,7 +1,7 @@
 import { PersonModel } from '@/models'
 import CommonService from './common.service'
 import crypto from 'crypto'
-import { Auth } from 'pu-common'
+import { auth } from 'pu-common'
 
 const personModel = new PersonModel()
 
@@ -28,8 +28,6 @@ function encryptPassword (password, salt) {
     .toString('base64')
 }
 
-let userService
-
 class UserService extends CommonService {
   constructor () {
     super(personModel)
@@ -49,7 +47,7 @@ class UserService extends CommonService {
       user = user.toObject()
       delete user.salt
       delete user.hashedPassword
-      const token = Auth.token(user, false)
+      const token = auth.token(user, false)
       return { token, user }
     })
   }
@@ -61,7 +59,7 @@ class UserService extends CommonService {
         if (user.facebookId) return resolve({ error: { message: 'This a facebook account.' } })
         const encPass = encryptPassword(password, user.salt)
         if (encPass !== user.hashedPassword) resolve({ error: { message: 'Invalid password.' } })
-        const token = Auth.token(user, rembemberMe)
+        const token = auth.token(user, rembemberMe)
         user = user.toObject()
         delete user.salt
         delete user.hashedPassword
@@ -82,7 +80,7 @@ class UserService extends CommonService {
               generateFbUser(fbUser)
                 .then(newUser => {
                   resolve({
-                    token: Auth.token(newUser, rembemberMe),
+                    token: auth.token(newUser, rembemberMe),
                     user: newUser
                   })
                 })
@@ -91,7 +89,7 @@ class UserService extends CommonService {
                 })
             } else {
               resolve({
-                token: Auth.token(user, rembemberMe),
+                token: auth.token(user, rembemberMe),
                 user: user
               })
             }
@@ -106,8 +104,10 @@ class UserService extends CommonService {
   }
 
   logout (email) {
-    return Auth.remove()
+    return auth.remove()
   }
 }
 
-export default UserService.instance
+let userService = UserService.instance
+
+export default userService

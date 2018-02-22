@@ -1,15 +1,14 @@
 import express from 'express'
-// import { isAuthenticated } from '@/util'
 import { UserController } from '@/controllers'
-import { Auth } from 'pu-common'
+import { auth } from 'pu-common'
 
 const router = express.Router()
 router.post('/', UserController.signUpEmail)
 router.post('/login/fb', UserController.fbLogin)
 router.post('/login/email', UserController.emailLogin)
-router.get('/', Auth.validate, UserController.current)
-router.delete('/logout', Auth.revoke, (req, res) => res.status(200).end())
-router.get('/test', Auth.validate, (req, res) => {
+router.get('/', auth.validate, UserController.current)
+router.delete('/logout', auth.revoke, (req, res) => res.status(200).end())
+router.get('/test', auth.validate, (req, res) => {
   res.status(200).end()
 })
 
