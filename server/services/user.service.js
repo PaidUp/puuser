@@ -40,6 +40,15 @@ class UserService extends CommonService {
     return userService
   }
 
+  getById (entityId) {
+    return this.model.findById(entityId).then(user => {
+      user = user.toObject()
+      delete user.salt
+      delete user.hashedPassword
+      return user
+    })
+  }
+
   signUpEmail (userForm) {
     userForm.salt = getSalt()
     userForm.hashedPassword = encryptPassword(userForm.password, userForm.salt)

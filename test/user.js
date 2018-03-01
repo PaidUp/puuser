@@ -116,6 +116,30 @@ it('POST# /login/email login with email success', done => {
     })
 })
 
+it('GET# /current get current user', done => {
+  chai
+    .request(server)
+    .get('/api/v1/user/current')
+    .set('authorization', 'Bearer ' + common.results.token)
+    .end((err, res) => {
+      res.should.have.status(200)
+      res.body.should.have.property('_id')
+      res.body.should.have.property('contacts')
+      res.body.should.have.property('roles')
+      res.body.should.have.property('firstName')
+      res.body.firstName.should.equal('John')
+      res.body.should.have.property('lastName')
+      res.body.lastName.should.equal('Doe')
+      res.body.should.have.property('email')
+      res.body.email.should.equal(common.request.user.userForm.email)
+      res.body.should.have.property('type')
+      res.body.type.should.equal('customer')       
+      res.body.should.not.have.property('salt')
+      res.body.should.not.have.property('hashedPassword')   
+      done()
+    })
+})
+
 it('POST# /login/email login with email wrong', done => {
   chai
     .request(server)
