@@ -48,7 +48,6 @@ export default class OrganizationCotroller {
 
   static update (req, res) {
     let { id, values } = req.body
-    console.log('req: ', req.body)
     userService.update(id, values).then(data => {
       return HandlerResponse.send(res, data)
     }).catch(reason => {
