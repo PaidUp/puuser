@@ -3,7 +3,7 @@ import CommonService from './common.service'
 import crypto from 'crypto'
 import { auth } from 'pu-common'
 
-const personModel = new PersonModel()
+// const personModel = new PersonModel()
 
 function generateFbUser (fbUser, type = 'customer') {
   const newFbUser = {
@@ -14,7 +14,7 @@ function generateFbUser (fbUser, type = 'customer') {
     type
 
   }
-  return personModel.save(newFbUser)
+  return this.model.save(newFbUser)
 }
 
 function getSalt () {
@@ -30,14 +30,7 @@ function encryptPassword (password, salt) {
 
 class UserService extends CommonService {
   constructor () {
-    super(personModel)
-  }
-
-  static get instance () {
-    if (!userService) {
-      userService = new UserService()
-    }
-    return userService
+    super(new PersonModel())
   }
 
   getById (entityId) {
@@ -49,10 +42,14 @@ class UserService extends CommonService {
     })
   }
 
+  update (id, values) {
+    return this.model.updateById(id, values)
+  }
+
   signUpEmail (userForm) {
     userForm.salt = getSalt()
     userForm.hashedPassword = encryptPassword(userForm.password, userForm.salt)
-    return personModel.save(userForm).then(user => {
+    return this.model.save(userForm).then(user => {
       user = user.toObject()
       delete user.salt
       delete user.hashedPassword
@@ -63,7 +60,7 @@ class UserService extends CommonService {
 
   emailLogin (email, password, rembemberMe = false) {
     return new Promise((resolve, reject) => {
-      personModel.findOne({ email: email.toLowerCase() }).then(user => {
+      this.model.findOne({ email: email.toLowerCase() }).then(user => {
         if (!user) return resolve({ error: { message: 'This email is not registered.' } })
         if (user.facebookId) return resolve({ error: { message: 'This a facebook account.' } })
         const encPass = encryptPassword(password, user.salt)
@@ -82,7 +79,7 @@ class UserService extends CommonService {
   signInFb (fbUser, rembemberMe) {
     return new Promise((resolve, reject) => {
       try {
-        personModel
+        this.model
           .findOne({ email: fbUser.email })
           .then(user => {
             if (!user || !user._id) {
@@ -117,6 +114,6 @@ class UserService extends CommonService {
   }
 }
 
-let userService = UserService.instance
+let userService = new UserService()
 
 export default userService

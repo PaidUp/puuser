@@ -4,6 +4,7 @@ import { auth } from 'pu-common'
 
 const router = express.Router()
 router.post('/', UserController.signUpEmail)
+router.put('/', UserController.update)
 router.post('/login/fb', UserController.fbLogin)
 router.post('/login/email', UserController.emailLogin)
 router.get('/current', auth.validate, UserController.current)
