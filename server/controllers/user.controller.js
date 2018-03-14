@@ -37,6 +37,16 @@ export default class OrganizationCotroller {
     })
   }
 
+  static refreshToken (req, res) {
+    let user = req.user
+    let rememberMe = req.query.remember
+    userService.refreshToken(user._id, rememberMe).then(data => {
+      return HandlerResponse.send(res, data)
+    }).catch(reason => {
+      return HandlerResponse.error(res, reason)
+    })
+  }
+
   static logout (req, res) {
     let email = req.body.email
     userService.logout(email).then(data => {

@@ -76,6 +76,18 @@ class UserService extends CommonService {
     })
   }
 
+  refreshToken (entityId, rembemberMe) {
+    return new Promise((resolve, reject) => {
+      this.model.findById(entityId).then(user => {
+        user = user.toObject()
+        delete user.salt
+        delete user.hashedPassword
+        const token = auth.token(user, rembemberMe)
+        resolve(token)
+      }).catch(reason => reject(reason))
+    })
+  }
+
   signInFb (fbUser, rembemberMe) {
     return new Promise((resolve, reject) => {
       try {
