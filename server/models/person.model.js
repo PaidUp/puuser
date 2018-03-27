@@ -1,14 +1,14 @@
 import CommonModel from './common.model'
 
 const contact = {
-  label: { type: String, required: true, enum: ['work', 'home'] },
+  label: { type: String, enum: ['work', 'home'], default: 'home' },
   phone: { type: String, required: true },
-  address1: { type: String, required: true },
+  address1: { type: String },
   address2: { type: String },
-  city: { type: String, required: true },
-  state: { type: String, required: true },
-  country: { type: String, required: true, default: [ 'USA' ] },
-  zipCode: { type: String, required: true }
+  city: { type: String },
+  state: { type: String },
+  country: { type: String, default: [ 'USA' ] },
+  zipCode: { type: String }
 }
 
 const verify = {
