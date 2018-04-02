@@ -5,16 +5,17 @@ import { auth } from 'pu-common'
 
 // const personModel = new PersonModel()
 
-function generateFbUser (fbUser, type = 'customer') {
+function generateFbUser (fbUser, phone, type = 'customer') {
   const newFbUser = {
     firstName: fbUser.first_name,
     lastName: fbUser.last_name,
     email: fbUser.email,
     facebookId: fbUser.id,
+    contacts: [{ phone }],
     type
 
   }
-  return this.model.save(newFbUser)
+  return newFbUser
 }
 
 function getSalt () {
@@ -88,23 +89,51 @@ class UserService extends CommonService {
     })
   }
 
-  signInFb (fbUser, rembemberMe) {
+  fbSignUp (fbUser, rembemberMe, phone) {
     return new Promise((resolve, reject) => {
       try {
         this.model
           .findOne({ email: fbUser.email })
           .then(user => {
             if (!user || !user._id) {
-              generateFbUser(fbUser)
-                .then(newUser => {
-                  resolve({
-                    token: auth.token(newUser, rembemberMe),
-                    user: newUser
-                  })
+              const fbu = generateFbUser(fbUser, phone)
+              this.model.save(fbu).then(newUser => {
+                resolve({
+                  token: auth.token(newUser, rembemberMe),
+                  user: newUser
                 })
+              })
                 .catch(reason => {
                   reject(reason)
                 })
+            } else {
+              resolve({
+                token: auth.token(user, rembemberMe),
+                user: user
+              })
+            }
+          })
+          .catch(reason => {
+            reject(reason)
+          })
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  fbLogin (fbUser, rembemberMe) {
+    return new Promise((resolve, reject) => {
+      try {
+        this.model
+          .findOne({ email: fbUser.email })
+          .then(user => {
+            if (!user || !user._id) {
+              resolve({
+                code: 'ValidationError',
+                message: 'Facebook account require signup first',
+                fbUser
+              })
             } else {
               resolve({
                 token: auth.token(user, rembemberMe),
