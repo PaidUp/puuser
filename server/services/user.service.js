@@ -11,7 +11,7 @@ function generateFbUser (fbUser, phone, type = 'customer') {
     lastName: fbUser.last_name,
     email: fbUser.email,
     facebookId: fbUser.id,
-    contacts: [{ phone }],
+    phone: phone,
     type
 
   }
@@ -44,6 +44,10 @@ class UserService extends CommonService {
   }
 
   update (id, values) {
+    if (values.password && values.password.trim().length > 0) {
+      values.salt = getSalt()
+      values.hashedPassword = encryptPassword(values.password, values.salt)
+    }
     return this.model.updateById(id, values)
   }
 

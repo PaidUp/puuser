@@ -34,6 +34,7 @@ const schema = {
   facebookId: { type: String },
   organizationId: { type: String },
   externalCustomerId: { type: String },
+  phone: { type: String },
   contacts: { type: [ contact ], default: [] },
   resetPassword: { type: resetPassword },
   verify: { type: verify },
