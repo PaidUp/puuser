@@ -18,6 +18,14 @@ export default class OrganizationCotroller {
     })
   }
 
+  static getById (req, res) {
+    userService.getById(req.params.userId).then(user => {
+      return HandlerResponse.send(res, user)
+    }).catch(reason => {
+      return HandlerResponse.error(res, reason)
+    })
+  }
+
   static fbLogin (req, res) {
     let rememberMe = req.body.rememberMe || false
     let authResponse = req.body.authResponse

@@ -48,7 +48,12 @@ class UserService extends CommonService {
       values.salt = getSalt()
       values.hashedPassword = encryptPassword(values.password, values.salt)
     }
-    return this.model.updateById(id, values)
+    return this.model.updateById(id, values).then(user => {
+      user = user.toObject()
+      delete user.salt
+      delete user.hashedPassword
+      return user
+    })
   }
 
   signUpEmail (userForm) {
