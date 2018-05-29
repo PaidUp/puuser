@@ -43,7 +43,10 @@ let all = {
     logName: 'pu-product-dev-log',
     metadata: {resource: {type: 'global'}}
   },
-  encryptKey: 'PZ3oXv2v6Pq5HAPFI9NFbQ=='
+  encryptKey: 'PZ3oXv2v6Pq5HAPFI9NFbQ==',
+  s3: {
+    bucket: 'pu-media-dev'
+  }
 }
 
 if (process.env.NODE_ENV) {

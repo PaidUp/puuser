@@ -19,6 +19,7 @@ export default function (app) {
   app.use(methodOverride())
   app.use(cookieParser())
   app.use(pmx.expressErrorHandler())
+
   app.use((req, res, next) => {
     let msg = `database connection status ${mongoose.connection.readyState}`
     if (mongoose.connection.readyState !== 1) {
