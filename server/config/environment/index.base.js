@@ -40,7 +40,7 @@ let all = {
   },
   logger: {
     projectId: 'gothic-talent-192920',
-    logName: 'pu-product-dev-log',
+    logName: 'pu-user-dev-log',
     metadata: {resource: {type: 'global'}}
   },
   encryptKey: 'PZ3oXv2v6Pq5HAPFI9NFbQ==',
