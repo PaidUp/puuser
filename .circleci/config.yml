@@ -40,7 +40,7 @@ jobs:
       - image: circleci/node:8.9
     environment:
       - ANSIBLE_HOST_KEY_CHECKING: false
-    working_directory: /tmp/pu-organization  
+    working_directory: /tmp/pu-user  
     steps:
       - run: |
           sudo apt-get update &&
@@ -58,7 +58,7 @@ jobs:
       - image: circleci/node:8.9
     environment:
       - ANSIBLE_HOST_KEY_CHECKING: false
-    working_directory: /tmp/pu-organization  
+    working_directory: /tmp/pu-user
     steps:
       - run: |
           sudo apt-get update &&
@@ -70,6 +70,24 @@ jobs:
       - run:
           name: Deploy if tests pass and branch is stage
           command: ansible-playbook deploy/main.yml -i ./deploy/inventory --extra-vars "env=stage"
+
+  deploy-production:
+    docker:
+      - image: circleci/node:8.9
+    environment:
+      - ANSIBLE_HOST_KEY_CHECKING: false
+    working_directory: /tmp/pu-user
+    steps:
+      - run: |
+          sudo apt-get update &&
+          sudo apt-get install software-properties-common &&
+          sudo apt-add-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main" -y &&
+          sudo apt-get update &&
+          sudo apt-get install ansible
+      - checkout
+      - run:
+          name: Deploy if tests pass and branch is stage
+          command: ansible-playbook deploy/main.yml -i ./deploy/inventory --extra-vars "env=production"
 
 workflows:
   version: 2
@@ -88,3 +106,10 @@ workflows:
           filters:
             branches:
               only: stage
+
+      - deploy-production:
+          requires:
+            - build
+          filters:
+            branches:
+              only: production
