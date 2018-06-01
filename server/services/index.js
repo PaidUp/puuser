@@ -1,7 +1,7 @@
-import UserService from './user.service'
-import FacebookService from './facebook.service'
+import userService from './user.service'
+import facebookService from './facebook.service'
 
 export {
-  UserService,
-  FacebookService
+  userService,
+  facebookService
 }

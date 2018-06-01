@@ -35,14 +35,18 @@ let all = {
   auth: {
     credential: 'puproduct-secret',
     host: 'redis-13835.c16.us-east-1-3.ec2.cloud.redislabs.com',
-    port: 13835
+    port: 13835,
+    key: 'JF06f7FJjTDkNOcM1sdywWw5CZBHW4Jy'
   },
   logger: {
     projectId: 'gothic-talent-192920',
-    logName: 'pu-product-dev-log',
+    logName: 'pu-user-dev-log',
     metadata: {resource: {type: 'global'}}
   },
-  encryptKey: 'PZ3oXv2v6Pq5HAPFI9NFbQ=='
+  encryptKey: 'PZ3oXv2v6Pq5HAPFI9NFbQ==',
+  s3: {
+    bucket: 'pu-media-dev'
+  }
 }
 
 if (process.env.NODE_ENV) {
