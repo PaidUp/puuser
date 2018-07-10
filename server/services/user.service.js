@@ -43,6 +43,15 @@ class UserService extends CommonService {
     })
   }
 
+  getByEmail (email) {
+    return this.model.findOne({email}).then(user => {
+      user = user.toObject()
+      delete user.salt
+      delete user.hashedPassword
+      return user
+    })
+  }
+
   update (id, values) {
     if (values.password && values.password.trim().length > 0) {
       values.salt = getSalt()

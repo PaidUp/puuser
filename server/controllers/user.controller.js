@@ -26,6 +26,14 @@ export default class OrganizationCotroller {
     })
   }
 
+  static getByEmail (req, res) {
+    userService.getByEmail(req.params.email).then(user => {
+      return HR.send(res, user)
+    }).catch(reason => {
+      return HR.error(res, reason)
+    })
+  }
+
   static fbLogin (req, res) {
     let rememberMe = req.body.rememberMe || false
     let authResponse = req.body.authResponse
