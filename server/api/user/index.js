@@ -41,6 +41,7 @@ router.post('/signup/fb', UserController.fbSignUp)
 router.post('/login/email', UserController.emailLogin)
 router.get('/current', auth.validate, UserController.current)
 router.get('/id/:userId', auth.validate, UserController.getById)
+router.get('/email/:email', auth.validate, UserController.getByEmail)
 router.get('/token', auth.validate, UserController.refreshToken)
 router.delete('/logout', auth.revoke, (req, res) => res.status(200).end())
 router.get('/test', auth.validate, (req, res) => {
