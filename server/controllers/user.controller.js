@@ -95,6 +95,35 @@ export default class OrganizationCotroller {
     })
   }
 
+  static recovery (req, res) {
+    let { email, token, password } = req.body
+    userService.recovery(email, token, password).then(data => {
+      return HR.send(res, data)
+    }).catch(reason => {
+      return HR.error(res, reason)
+    })
+  }
+
+  static reset (req, res) {
+    let { email } = req.body
+    userService.reset(email).then(data => {
+      return HR.send(res, data)
+    }).catch(reason => {
+      return HR.error(res, reason)
+    })
+  }
+
+  static verifyResetToken (req, res) {
+    let token = req.params.token
+    userService.verifyResetToken(token).then(data => {
+      let resp = false
+      if (data) resp = data.email
+      return HR.send(res, resp)
+    }).catch(reason => {
+      return HR.error(res, reason)
+    })
+  }
+
   static avatar (req, res) {
     if (!req.file) return HR.error(res, 'files is required', 422)
     return HR.send(res, {})

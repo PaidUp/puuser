@@ -46,6 +46,19 @@ let all = {
   encryptKey: 'PZ3oXv2v6Pq5HAPFI9NFbQ==',
   s3: {
     bucket: 'pu-media-dev'
+  },
+  email: {
+    options: {
+      apiKey: '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',
+      fromName: 'Support',
+      fromEmail: 'support@getpaidup.com'
+    },
+    templates: {
+      reset: {
+        id: '0a636de0-3903-4a43-b736-e38060c1119f',
+        baseUrl: 'http://localhost:8080/reset'
+      }
+    }
   }
 }
 
