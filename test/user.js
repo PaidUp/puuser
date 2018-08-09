@@ -120,6 +120,7 @@ it('PUT# /update update user', done => {
   chai
     .request(server)
     .put('/api/v1/user')
+    .set('authorization', 'Bearer ' + common.results.token)
     .send({
       id: common.results.user._id,
       values: {
