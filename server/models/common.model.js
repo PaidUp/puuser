@@ -68,6 +68,19 @@ export default class CommonModel {
     })
   }
 
+  findOneAndUpdate (query, values) {
+    return new Promise((resolve, reject) => {
+      try {
+        this.Model.findOneAndUpdate(query, values, { new: true }, (err, data) => {
+          if (err) return reject(err)
+          resolve(data)
+        })
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
   findById (_id) {
     return this.Model.findById(_id).exec()
   }

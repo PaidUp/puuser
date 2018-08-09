@@ -34,7 +34,10 @@ let combinedMiddleware = (function () {
 
 const router = express.Router()
 router.post('/', UserController.signUpEmail)
-router.put('/', UserController.update)
+router.put('/', auth.validate, UserController.update)
+router.put('/recovery', UserController.recovery)
+router.get('/reset/:token', UserController.verifyResetToken)
+router.put('/reset', UserController.reset)
 router.post('/avatar', combinedMiddleware, UserController.avatar)
 router.post('/login/fb', UserController.fbLogin)
 router.post('/signup/fb', UserController.fbSignUp)

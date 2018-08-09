@@ -1,8 +1,10 @@
 import { PersonModel } from '@/models'
 import CommonService from './common.service'
 import crypto from 'crypto'
-import { auth } from 'pu-common'
+import { auth, Email } from 'pu-common'
+import config from '@/config/environment'
 
+const mail = new Email(config.email.options)
 // const personModel = new PersonModel()
 
 function generateFbUser (fbUser, phone, type = 'customer') {
@@ -48,6 +50,12 @@ class UserService extends CommonService {
       user = user.toObject()
       delete user.salt
       delete user.hashedPassword
+      return user
+    })
+  }
+
+  verifyResetToken (token) {
+    return this.model.findOne({ 'verify.token': token, 'verify.status': 'active' }).then(user => {
       return user
     })
   }
@@ -170,6 +178,37 @@ class UserService extends CommonService {
 
   logout (email) {
     return auth.remove()
+  }
+
+  reset (email) {
+    let token = crypto.randomBytes(16).toString('hex')
+    return userService.findOneAndUpdate({ email, facebookId: { '$exists': false } }, { verify: {
+      token,
+      updatedAt: new Date(),
+      status: 'active'
+    }}).then(data => {
+      if (data) {
+        mail.sendTemplate(data.email, config.email.templates.reset.id, {
+          userFirstName: data.firstName,
+          resetPasswordURL: config.email.templates.reset.baseUrl + '/' + token
+        })
+      }
+      return data
+    })
+  }
+
+  recovery (email, token, password) {
+    const salt = getSalt()
+    return userService.findOneAndUpdate({ 'verify.status': 'active', 'verify.token': token, email, facebookId: { '$exists': false } }, {
+      salt,
+      hashedPassword: encryptPassword(password, salt),
+      'verify.status': 'inactive'
+    }).then(user => {
+      user = user.toObject()
+      delete user.salt
+      delete user.hashedPassword
+      return user
+    })
   }
 }
 
