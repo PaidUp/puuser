@@ -54,6 +54,19 @@ class UserService extends CommonService {
     })
   }
 
+  getAll () {
+    return this.model.find({}).then(users => {
+      return users.map(user => {
+        return {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phone: user.phone
+        }
+      })
+    })
+  }
+
   verifyResetToken (token) {
     return this.model.findOne({ 'verify.token': token, 'verify.status': 'active' }).then(user => {
       return user
