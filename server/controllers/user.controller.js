@@ -26,6 +26,14 @@ export default class OrganizationCotroller {
     })
   }
 
+  static getAll (req, res) {
+    userService.getAll().then(users => {
+      return HR.send(res, users)
+    }).catch(reason => {
+      return HR.error(res, reason)
+    })
+  }
+
   static getByEmail (req, res) {
     userService.getByEmail(req.params.email).then(user => {
       return HR.send(res, user)
