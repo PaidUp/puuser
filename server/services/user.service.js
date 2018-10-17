@@ -45,6 +45,16 @@ class UserService extends CommonService {
     })
   }
 
+  search (criteria) {
+    return this.model.find({
+      $or: [
+        {firstName: new RegExp(criteria, 'i')},
+        {lastName: new RegExp(criteria, 'i')},
+        {email: new RegExp('^' + criteria + '$', 'i')}
+      ]
+    }, '-salt -hashedPassword')
+  }
+
   getByEmail (email) {
     return this.model.findOne({email}).then(user => {
       user = user.toObject()

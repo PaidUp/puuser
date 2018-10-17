@@ -10,6 +10,15 @@ export default class OrganizationCotroller {
         return HR.error(res, reason)
       })
   }
+
+  static search (req, res) {
+    if (!req.query.criteria) return HR.error(res, 'Criteria is required', 422)
+    const criteria = req.query.criteria
+    userService.search(criteria)
+      .then(users => HR.send(res, users))
+      .catch(reason => HR.error(res, reason))
+  }
+
   static current (req, res) {
     userService.getById(req.user._id).then(user => {
       return HR.send(res, user)
