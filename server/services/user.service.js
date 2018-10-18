@@ -11,11 +11,10 @@ function generateFbUser (fbUser, phone, type = 'customer') {
   const newFbUser = {
     firstName: fbUser.first_name,
     lastName: fbUser.last_name,
-    email: fbUser.email,
+    email: fbUser.email.toLowerCase(),
     facebookId: fbUser.id,
     phone: phone,
     type
-
   }
   return newFbUser
 }
@@ -43,6 +42,16 @@ class UserService extends CommonService {
       delete user.hashedPassword
       return user
     })
+  }
+
+  search (criteria) {
+    return this.model.find({
+      $or: [
+        {firstName: new RegExp(criteria, 'i')},
+        {lastName: new RegExp(criteria, 'i')},
+        {email: new RegExp('^' + criteria + '$', 'i')}
+      ]
+    }, '-salt -hashedPassword')
   }
 
   getByEmail (email) {
@@ -89,6 +98,7 @@ class UserService extends CommonService {
   signUpEmail (userForm) {
     userForm.salt = getSalt()
     userForm.hashedPassword = encryptPassword(userForm.password, userForm.salt)
+    userForm.email = userForm.email.toLowerCase()
     return this.model.save(userForm).then(user => {
       user = user.toObject()
       delete user.salt
@@ -132,7 +142,7 @@ class UserService extends CommonService {
     return new Promise((resolve, reject) => {
       try {
         this.model
-          .findOne({ email: fbUser.email })
+          .findOne({ email: new RegExp('^' + fbUser.email + '$', 'i') })
           .then(user => {
             if (!user || !user._id) {
               const fbu = generateFbUser(fbUser, phone)

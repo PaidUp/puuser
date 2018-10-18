@@ -21,6 +21,10 @@ export default class CommonService {
     return this.model.find(filter).then(entities => entities)
   }
 
+  search (criteria) {
+    return this.model.search(criteria).then(entities => entities)
+  }
+
   findOneAndUpdate (query, values) {
     return this.model.findOneAndUpdate(query, values).then(doc => doc)
   }

@@ -47,7 +47,7 @@ export default class OrganizationModel extends CommonModel {
 
     this.schema.path('email').validate(async function (value) {
       try {
-        let user = await this.constructor.findOne({ email: value })
+        let user = await this.constructor.findOne({ email: new RegExp('^' + value + '$', 'i') })
         return user === null
       } catch (error) {
         return false

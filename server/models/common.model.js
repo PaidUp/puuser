@@ -29,10 +29,10 @@ export default class CommonModel {
     })
   }
 
-  find (filter) {
+  find (filter, select) {
     return new Promise((resolve, reject) => {
       try {
-        this.Model.find(filter, (err, data) => {
+        this.Model.find(filter, select, (err, data) => {
           if (err) return reject(err)
           resolve(data)
         })
