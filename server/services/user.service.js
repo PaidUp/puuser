@@ -1,7 +1,7 @@
 import { PersonModel } from '@/models'
 import CommonService from './common.service'
 import crypto from 'crypto'
-import { auth, Email } from 'pu-common'
+import { auth, Email, Logger } from 'pu-common'
 import config from '@/config/environment'
 
 const mail = new Email(config.email.options)
@@ -95,17 +95,47 @@ class UserService extends CommonService {
     })
   }
 
+  // signUpEmail (userForm) {
+  //   userForm.salt = getSalt()
+  //   userForm.hashedPassword = encryptPassword(userForm.password, userForm.salt)
+  //   userForm.email = userForm.email.toLowerCase()
+  //   return this.model.save(userForm).then(user => {
+  //     user = user.toObject()
+  //     delete user.salt
+  //     delete user.hashedPassword
+  //     const token = auth.token(user, false)
+  //     return { token, user }
+  //   })
+  // }
+
   signUpEmail (userForm) {
+    userForm.email = userForm.email.trim().toLowerCase()
+    Logger.info('signup email: ' + userForm.email)
+    if (userForm.emailSuggested) userForm.emailSuggested = userForm.emailSuggested.trim().toLowerCase()
+    Logger.info('signup email suggested: ' + userForm.emailSuggested)
     userForm.salt = getSalt()
     userForm.hashedPassword = encryptPassword(userForm.password, userForm.salt)
-    userForm.email = userForm.email.toLowerCase()
-    return this.model.save(userForm).then(user => {
-      user = user.toObject()
-      delete user.salt
-      delete user.hashedPassword
-      const token = auth.token(user, false)
-      return { token, user }
-    })
+    if (userForm.email === userForm.emailSuggested) {
+      Logger.info('signup update')
+      return userService.findOneAndUpdate({ email: new RegExp('^' + userForm.email + '$', 'i') }, userForm)
+        .then(user => {
+          if (!user || !user._id) return false
+          user = user.toObject()
+          delete user.salt
+          delete user.hashedPassword
+          const token = auth.token(user, false)
+          return { token, user }
+        })
+    } else {
+      Logger.info('signup create')
+      return this.model.save(userForm).then(user => {
+        user = user.toObject()
+        delete user.salt
+        delete user.hashedPassword
+        const token = auth.token(user, false)
+        return { token, user }
+      })
+    }
   }
 
   emailLogin (email, password, rembemberMe = false) {

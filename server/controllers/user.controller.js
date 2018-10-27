@@ -5,6 +5,9 @@ export default class OrganizationCotroller {
   static signUpEmail (req, res) {
     userService.signUpEmail(req.body)
       .then(user => {
+        if (!user) {
+          return HR.error(res, {message: 'The specified email address is already in use.'}, 500)
+        }
         return HR.send(res, user)
       }).catch(reason => {
         return HR.error(res, reason)
