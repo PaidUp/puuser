@@ -63,12 +63,12 @@ export default class OrganizationCotroller {
 
   static fbSignUp (req, res) {
     let rememberMe = req.body.rememberMe || false
-    let authResponse = req.body.authResponse
+    let accessToken = req.body.accessToken
     let phone = req.body.phone
     if (!phone) {
       return HR.error(res, 'Phone is required', 422)
     }
-    facebookService.fbSignUp(authResponse, rememberMe, phone).then(data => {
+    facebookService.fbSignUp(accessToken, rememberMe, phone).then(data => {
       return HR.send(res, data)
     }).catch(reason => {
       return HR.error(res, reason)

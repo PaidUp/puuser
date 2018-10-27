@@ -37,9 +37,9 @@ class FacebookService {
     })
   }
 
-  fbSignUp (facebookResponse, rememberMe, phone) {
+  fbSignUp (accessToken, rememberMe, phone) {
     return new Promise((resolve, reject) => {
-      FB.setAccessToken(facebookResponse.accessToken)
+      FB.setAccessToken(accessToken)
       FB.api('/me', { fields: ['email', 'first_name', 'gender', 'last_name', 'link', 'locale', 'middle_name', 'name', 'timezone', 'updated_time', 'verified'] },
         fbUser => {
           if (fbUser.error) {
