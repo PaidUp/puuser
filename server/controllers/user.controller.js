@@ -43,6 +43,16 @@ export default class OrganizationCotroller {
     })
   }
 
+  static getIntoEmails (req, res) {
+    const emails = req.body.emails
+    if (!emails) return HR.error(res, 'emails are required', 422)
+    userService.getIntoEmails(emails).then(users => {
+      return HR.send(res, users)
+    }).catch(reason => {
+      return HR.error(res, reason)
+    })
+  }
+
   static getByEmail (req, res) {
     userService.getByEmail(req.params.email).then(user => {
       return HR.send(res, user)
