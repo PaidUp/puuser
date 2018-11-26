@@ -67,6 +67,7 @@ class UserService extends CommonService {
     return this.model.find({}).then(users => {
       return users.map(user => {
         return {
+          _id: user._id,
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
@@ -80,6 +81,7 @@ class UserService extends CommonService {
     return this.model.find({email: { $in: emails }}).then(users => {
       return users.map(user => {
         return {
+          _id: user._id,
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
