@@ -38,7 +38,8 @@ const schema = {
   contacts: { type: [ contact ], default: [] },
   resetPassword: { type: resetPassword },
   verify: { type: verify },
-  roles: { type: [String], default: [ 'parent' ] }
+  roles: { type: [String], default: [ 'parent' ] },
+  pendingSignup: { type: Boolean, default: false }
 }
 
 export default class OrganizationModel extends CommonModel {
