@@ -110,10 +110,21 @@ class UserService extends CommonService {
     })
   }
 
-  signUpEmail (userForm) {
+  async signUpEmail (userForm) {
     userForm.salt = getSalt()
     userForm.hashedPassword = encryptPassword(userForm.password, userForm.salt)
     userForm.email = userForm.email.toLowerCase()
+    const usr = await this.model.findOne({email: new RegExp('^' + userForm.email + '$', 'i')})
+    if (usr && usr.pendingSignup) {
+      userForm.pendingSignup = false
+      return this.model.updateById(usr._id, userForm).then(user => {
+        user = user.toObject()
+        delete user.salt
+        delete user.hashedPassword
+        const token = auth.token(user, false)
+        return { token, user }
+      })
+    }
     return this.model.save(userForm).then(user => {
       user = user.toObject()
       delete user.salt
@@ -153,37 +164,62 @@ class UserService extends CommonService {
     })
   }
 
-  fbSignUp (fbUser, rembemberMe, phone) {
-    return new Promise((resolve, reject) => {
-      try {
-        this.model
-          .findOne({ email: new RegExp('^' + fbUser.email + '$', 'i') })
-          .then(user => {
-            if (!user || !user._id) {
-              const fbu = generateFbUser(fbUser, phone)
-              this.model.save(fbu).then(newUser => {
-                resolve({
-                  token: auth.token(newUser, rembemberMe),
-                  user: newUser
-                })
-              })
-                .catch(reason => {
-                  reject(reason)
-                })
-            } else {
-              resolve({
-                token: auth.token(user, rembemberMe),
-                user: user
-              })
-            }
-          })
-          .catch(reason => {
-            reject(reason)
-          })
-      } catch (error) {
-        reject(error)
-      }
-    })
+  async fbSignUp (fbUser, rembemberMe, phone) {
+    const usr = await this.model.findOne({email: new RegExp('^' + fbUser.email + '$', 'i')})
+    const fbu = generateFbUser(fbUser, phone)
+    if (!usr || !usr.id) {
+      return this.model.save(fbu).then(newUser => {
+        return {
+          token: auth.token(newUser, rembemberMe),
+          user: newUser
+        }
+      })
+    } else if (usr && usr.pendingSignup) {
+      fbu.pendingSignup = false
+      return this.model.updateById(usr._id, fbu).then(user => {
+        user = user.toObject()
+        delete user.salt
+        delete user.hashedPassword
+        const token = auth.token(user, false)
+        return { token, user }
+      })
+    } else {
+      return Promise.resolve({
+        token: auth.token(usr, rembemberMe),
+        user: usr
+      })
+    }
+
+    // return new Promise((resolve, reject) => {
+    //   try {
+    //     this.model
+    //       .findOne({ email: new RegExp('^' + fbUser.email + '$', 'i') })
+    //       .then(user => {
+    //         if (!user || !user._id) {
+    //           const fbu = generateFbUser(fbUser, phone)
+    //           this.model.save(fbu).then(newUser => {
+    //             resolve({
+    //               token: auth.token(newUser, rembemberMe),
+    //               user: newUser
+    //             })
+    //           })
+    //             .catch(reason => {
+    //               reject(reason)
+    //             })
+    //         } else {
+    //           resolve({
+    //             token: auth.token(user, rembemberMe),
+    //             user: user
+    //           })
+    //         }
+    //       })
+    //       .catch(reason => {
+    //         reject(reason)
+    //       })
+    //   } catch (error) {
+    //     reject(error)
+    //   }
+    // })
   }
 
   fbLogin (fbUser, rembemberMe) {
