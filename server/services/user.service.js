@@ -1,7 +1,7 @@
 import { PersonModel } from '@/models'
 import CommonService from './common.service'
 import crypto from 'crypto'
-import { auth, Email, Logger } from 'pu-common'
+import { auth, Email } from 'pu-common'
 import config from '@/config/environment'
 
 const mail = new Email(config.email.options)
@@ -67,6 +67,7 @@ class UserService extends CommonService {
     return this.model.find({}).then(users => {
       return users.map(user => {
         return {
+          _id: user._id,
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
@@ -80,6 +81,7 @@ class UserService extends CommonService {
     return this.model.find({email: { $in: emails }}).then(users => {
       return users.map(user => {
         return {
+          _id: user._id,
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
@@ -108,40 +110,14 @@ class UserService extends CommonService {
     })
   }
 
-  // signUpEmail (userForm) {
-  //   userForm.salt = getSalt()
-  //   userForm.hashedPassword = encryptPassword(userForm.password, userForm.salt)
-  //   userForm.email = userForm.email.toLowerCase()
-  //   return this.model.save(userForm).then(user => {
-  //     user = user.toObject()
-  //     delete user.salt
-  //     delete user.hashedPassword
-  //     const token = auth.token(user, false)
-  //     return { token, user }
-  //   })
-  // }
-
-  signUpEmail (userForm) {
-    userForm.email = userForm.email.trim().toLowerCase()
-    Logger.info('signup email: ' + userForm.email)
-    if (userForm.emailSuggested) userForm.emailSuggested = userForm.emailSuggested.trim().toLowerCase()
-    Logger.info('signup email suggested: ' + userForm.emailSuggested)
+  async signUpEmail (userForm) {
     userForm.salt = getSalt()
     userForm.hashedPassword = encryptPassword(userForm.password, userForm.salt)
-    if (userForm.email === userForm.emailSuggested) {
-      Logger.info('signup update')
-      return userService.findOneAndUpdate({ email: new RegExp('^' + userForm.email + '$', 'i') }, userForm)
-        .then(user => {
-          if (!user || !user._id) return false
-          user = user.toObject()
-          delete user.salt
-          delete user.hashedPassword
-          const token = auth.token(user, false)
-          return { token, user }
-        })
-    } else {
-      Logger.info('signup create')
-      return this.model.save(userForm).then(user => {
+    userForm.email = userForm.email.toLowerCase()
+    const usr = await this.model.findOne({email: new RegExp('^' + userForm.email + '$', 'i')})
+    if (usr && usr.pendingSignup) {
+      userForm.pendingSignup = false
+      return this.model.updateById(usr._id, userForm).then(user => {
         user = user.toObject()
         delete user.salt
         delete user.hashedPassword
@@ -149,6 +125,13 @@ class UserService extends CommonService {
         return { token, user }
       })
     }
+    return this.model.save(userForm).then(user => {
+      user = user.toObject()
+      delete user.salt
+      delete user.hashedPassword
+      const token = auth.token(user, false)
+      return { token, user }
+    })
   }
 
   emailLogin (email, password, rembemberMe = false) {
@@ -181,37 +164,62 @@ class UserService extends CommonService {
     })
   }
 
-  fbSignUp (fbUser, rembemberMe, phone) {
-    return new Promise((resolve, reject) => {
-      try {
-        this.model
-          .findOne({ email: new RegExp('^' + fbUser.email + '$', 'i') })
-          .then(user => {
-            if (!user || !user._id) {
-              const fbu = generateFbUser(fbUser, phone)
-              this.model.save(fbu).then(newUser => {
-                resolve({
-                  token: auth.token(newUser, rembemberMe),
-                  user: newUser
-                })
-              })
-                .catch(reason => {
-                  reject(reason)
-                })
-            } else {
-              resolve({
-                token: auth.token(user, rembemberMe),
-                user: user
-              })
-            }
-          })
-          .catch(reason => {
-            reject(reason)
-          })
-      } catch (error) {
-        reject(error)
-      }
-    })
+  async fbSignUp (fbUser, rembemberMe, phone) {
+    const usr = await this.model.findOne({email: new RegExp('^' + fbUser.email + '$', 'i')})
+    const fbu = generateFbUser(fbUser, phone)
+    if (!usr || !usr.id) {
+      return this.model.save(fbu).then(newUser => {
+        return {
+          token: auth.token(newUser, rembemberMe),
+          user: newUser
+        }
+      })
+    } else if (usr && usr.pendingSignup) {
+      fbu.pendingSignup = false
+      return this.model.updateById(usr._id, fbu).then(user => {
+        user = user.toObject()
+        delete user.salt
+        delete user.hashedPassword
+        const token = auth.token(user, false)
+        return { token, user }
+      })
+    } else {
+      return Promise.resolve({
+        token: auth.token(usr, rembemberMe),
+        user: usr
+      })
+    }
+
+    // return new Promise((resolve, reject) => {
+    //   try {
+    //     this.model
+    //       .findOne({ email: new RegExp('^' + fbUser.email + '$', 'i') })
+    //       .then(user => {
+    //         if (!user || !user._id) {
+    //           const fbu = generateFbUser(fbUser, phone)
+    //           this.model.save(fbu).then(newUser => {
+    //             resolve({
+    //               token: auth.token(newUser, rembemberMe),
+    //               user: newUser
+    //             })
+    //           })
+    //             .catch(reason => {
+    //               reject(reason)
+    //             })
+    //         } else {
+    //           resolve({
+    //             token: auth.token(user, rembemberMe),
+    //             user: user
+    //           })
+    //         }
+    //       })
+    //       .catch(reason => {
+    //         reject(reason)
+    //       })
+    //   } catch (error) {
+    //     reject(error)
+    //   }
+    // })
   }
 
   fbLogin (fbUser, rembemberMe) {
