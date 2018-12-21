@@ -85,7 +85,10 @@ class UserService extends CommonService {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          phone: user.phone
+          phone: user.phone,
+          externalCustomerId: user.externalCustomerId,
+          roles: user.roles,
+          pendingSignup: user.pendingSignup
         }
       })
     })
