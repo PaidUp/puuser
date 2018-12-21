@@ -119,7 +119,7 @@ class UserService extends CommonService {
     userForm.email = userForm.email.toLowerCase()
     const usr = await this.model.findOne({email: new RegExp('^' + userForm.email + '$', 'i')})
     if (usr && usr.pendingSignup) {
-      userForm.pendingSignup = false
+      userForm.pendingSignup = userForm.pendingSignup || false
       return this.model.updateById(usr._id, userForm).then(user => {
         user = user.toObject()
         delete user.salt
